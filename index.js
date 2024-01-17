@@ -17,7 +17,7 @@ const API_URL = 'https://pokeapi.co/api/v2/pokemon';
             </div>
 */
 
-const cardPokemon = (URL_img, altImg, namePokemon, idPokemon, weightPokemon) => {
+const cardPokemon = ({urlImg, altImg, namePokemon, idPokemon, weightPokemon}) => {
     // Creación de elementos
     const row = document.createElement('div');
     const col = document.createElement('div');
@@ -29,7 +29,7 @@ const cardPokemon = (URL_img, altImg, namePokemon, idPokemon, weightPokemon) => 
     const text = document.createElement('p');
 
     // Clases
-    row.className = 'row';
+    row.className = 'row gy-3 my-3';
     col.className = 'col-sm-6 col-md-4 col-lg-3';
     card.className = 'card';
     img.className = 'card-img-top';
@@ -44,7 +44,7 @@ const cardPokemon = (URL_img, altImg, namePokemon, idPokemon, weightPokemon) => 
     text.id = 'weight-pokemon';
 
     // Asignar valores
-    img.src = URL_img;
+    img.src = urlImg;
     img.alt = altImg;
     title.textContent = namePokemon;
     subtitle.textContent = "ID " + idPokemon;
@@ -65,26 +65,47 @@ const cardPokemon = (URL_img, altImg, namePokemon, idPokemon, weightPokemon) => 
 
 document.getElementById('btn-show-pokemons').addEventListener('click', async () => {
     const pokemons = await fetchPokemon(API_URL);
-    pokemons.results.forEach(async (pokemon) => {
-        const infoPokemon = await fetchPokemon(pokemon.url);
-        
-        const namePokemon = infoPokemon.name;
-        const idPokemon = infoPokemon.id;
-        const weightPokemon = infoPokemon.weight;
-        const urlImg = infoPokemon.sprites.back_default;
-        const altImg = namePokemon + " image";
+    const arrayUrlsPokemonsPromise = pokemons.results.map(pokemon => fetchPokemon(pokemon.url));
+    const arrayUrlsPokemons = await Promise.all(arrayUrlsPokemonsPromise);
 
-        cardPokemon(urlImg, altImg, namePokemon, idPokemon, weightPokemon);
-        
+    const dataPokemons = arrayUrlsPokemons.map(infoPokemon => {
+        return infoPokemon = {
+            namePokemon: infoPokemon.name,
+            idPokemon: infoPokemon.id,
+            weightPokemon: infoPokemon.weight,
+            urlImg: infoPokemon.sprites.back_default,
+            altImg: infoPokemon.name + " image"
+        }
     });
+    
+    dataPokemons.forEach(pokemon => cardPokemon(pokemon));
+    saveDataLocalStorage(dataPokemons);
 })
 
 const fetchPokemon = async ( rute ) => {
     try {
-        const data = await fetch(`${rute}`);
+        const data = await fetch(rute);
         const parsedData = await data.json();
         return parsedData;
     } catch (err) {
         console.error(err);
     }
 }
+
+const saveDataLocalStorage = ( data ) => {
+    console.log(data); // MENSAJE EN CONSOLA CON DATOS DEL ARREGLO.
+    console.log(JSON.stringify(data)); // MENSAJE EN CONSOLA CON ARREGLO VACÍO.
+    localStorage.setItem("list-pokemons", JSON.stringify(data));
+}
+
+const getDataLocalStorage = () => {
+    const dataPokemons = JSON.parse(localStorage.getItem("list-pokemons"));
+    console.log(dataPokemons, dataPokemons.length);
+    if (dataPokemons){
+        dataPokemons.forEach(pokemon => cardPokemon(pokemon));
+    }else {
+        console.log("No hay datos en el local storage");
+    }
+}
+
+getDataLocalStorage()
