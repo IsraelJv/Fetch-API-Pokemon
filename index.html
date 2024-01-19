@@ -15,11 +15,34 @@
     </header>
 
     <div class="container">
-        <div class="container-fluid">
-            <button id="btn-show-pokemons" type="button" class="btn btn-dark">Mostrar pokemons</button>
+        <div class='container'>
+            <div class="container row">
+                <button id="btn-show-pokemons" type="button" class="btn btn-dark mb-3">Listar pokemons</button>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <label for="poke-name" class="form-label">Buscar Pokemon (Name / ID)</label>
+                </div>
+                <div class="col-auto">
+                    <input id='poke-name' type="text" class="form-control" name="poke-name" value="">
+                </div>
+            </div>
+            <div class='container row mt-3'>
+                <div class="col-md-4 gy-1">
+                    <button id='previous-btn' class='btn btn-danger w-100'>Anterior</button> 
+                </div>
+                <div class="col-md-4 gy-1">
+                    <button id='get-btn' class='btn btn-dark w-100'>Obtener Pokemon</button> 
+                </div>
+                <div class="col-md-4 gy-1">
+                    <button id='next-btn' class='btn btn-danger w-100'>Siguiente</button> 
+                </div>
+            </div>
         </div>
-        <div id="pokemon-container" class="container">
-            
+        <div id="pokemon-container " class="container">
+            <div id="row-id" class="row gy-3 my-3 justify-content-center">
+
+            </div>
         </div>
     </div>
 
